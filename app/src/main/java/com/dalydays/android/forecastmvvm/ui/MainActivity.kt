@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return NavigationUI.navigateUp(navController, null)
+        // From the documentation: "If you do not have a DrawerLayout, you should call NavController.navigateUp() directly."
+        return navController.navigateUp()
     }
 }
