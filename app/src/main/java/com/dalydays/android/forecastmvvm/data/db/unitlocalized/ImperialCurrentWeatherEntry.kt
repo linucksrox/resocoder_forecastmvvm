@@ -9,7 +9,7 @@ data class ImperialCurrentWeatherEntry(
     override val conditionText: String,
     @ColumnInfo(name = "condition_icon")
     override val conditionIconUrl: String,
-    @ColumnInfo(name = "winMph")
+    @ColumnInfo(name = "windMph")
     override val windSpeed: Double,
     @ColumnInfo(name = "windDir")
     override val windDirection: String,

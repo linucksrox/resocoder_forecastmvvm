@@ -6,9 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 
 import com.dalydays.android.forecastmvvm.R
-import com.dalydays.android.forecastmvvm.data.ApixuWeatherApiService
+import com.dalydays.android.forecastmvvm.data.network.ApixuWeatherApiService
+import com.dalydays.android.forecastmvvm.data.network.ConnectivityInterceptor
+import com.dalydays.android.forecastmvvm.data.network.ConnectivityInterceptorImpl
+import com.dalydays.android.forecastmvvm.data.network.WeatherNetworkDataSourceImpl
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,11 +37,18 @@ class CurrentWeatherFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(CurrentWeatherViewModel::class.java)
         // TODO: Use the ViewModel
-        val apiService = ApixuWeatherApiService()
 
+        // not a good way to do this!!!
+        val apiService = ApixuWeatherApiService(ConnectivityInterceptorImpl(this.context!!))
+        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService)
+
+        weatherNetworkDataSource.downloadedCurrentWeather.observe(this, Observer {
+            textview.text = it.toString()
+        })
+
+        // not a good way to do this!!!
         GlobalScope.launch(Dispatchers.Main) {
-            val currentWeatherResponse = apiService.getCurrentWeather("Wayland, Michigan").await()
-            textview.text = currentWeatherResponse.toString()
+            weatherNetworkDataSource.fetchCurrentWeather("Wayland, Michigan", "en")
         }
     }
 
