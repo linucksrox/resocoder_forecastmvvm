@@ -1,5 +1,6 @@
 package com.dalydays.android.forecastmvvm.data
 
+import com.dalydays.android.forecastmvvm.R
 import com.dalydays.android.forecastmvvm.data.response.CurrentWeatherResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
