@@ -1,4 +1,4 @@
-package com.dalydays.android.forecastmvvm.data.response
+package com.dalydays.android.forecastmvvm.data.db.entity
 
 import com.google.gson.annotations.SerializedName
 
