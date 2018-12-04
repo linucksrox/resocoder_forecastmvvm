@@ -17,7 +17,7 @@ const val API_KEY = ""
 
 interface ApixuWeatherApiService {
 
-    @GET("current.json")
+    @GET("currentWeatherEntry.json")
     fun getCurrentWeather(
         @Query("q") location: String,
         @Query("lang") languageCode: String = "en"
