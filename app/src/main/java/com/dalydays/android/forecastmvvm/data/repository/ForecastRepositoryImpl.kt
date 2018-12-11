@@ -8,6 +8,9 @@ import com.dalydays.android.forecastmvvm.data.network.response.CurrentWeatherRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.threeten.bp.ZonedDateTime
+import java.util.*
 
 class ForecastRepositoryImpl(
     private val currentWeatherDao: CurrentWeatherDao,
@@ -16,17 +19,39 @@ class ForecastRepositoryImpl(
 
     init {
         weatherNetworkDataSource.downloadedCurrentWeather.observeForever { newCurrentWeather ->
-            // persist
+            persistCurrentWeather(newCurrentWeather)
         }
     }
 
-    override suspend fun getCurrentWeather(metric: Boolean): LiveData<UnitSpecificCurrentWeatherEntry> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun getCurrentWeather(metric: Boolean): LiveData<out UnitSpecificCurrentWeatherEntry> {
+        return withContext(Dispatchers.IO) {
+            initWeatherData()
+            return@withContext if (metric) currentWeatherDao.getWeatherMetric()
+            else currentWeatherDao.getWeatherImperial()
+        }
     }
 
     private fun persistCurrentWeather(fetchedWeather: CurrentWeatherResponse) {
         GlobalScope.launch(Dispatchers.IO) {
             currentWeatherDao.upsert(fetchedWeather.currentWeatherEntry)
         }
+    }
+
+    private suspend fun initWeatherData() {
+        if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1))) {
+            fetchCurrentWeather()
+        }
+    }
+
+    private suspend fun fetchCurrentWeather() {
+        weatherNetworkDataSource.fetchCurrentWeather(
+            "Wayland, MI",
+            Locale.getDefault().language
+        )
+    }
+
+    private fun isFetchCurrentNeeded(lastFetchTime: ZonedDateTime): Boolean {
+        val thirtyMinutesAgo = ZonedDateTime.now().minusMinutes(30)
+        return lastFetchTime.isBefore(thirtyMinutesAgo)
     }
 }

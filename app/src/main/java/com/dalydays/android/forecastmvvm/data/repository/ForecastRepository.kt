@@ -4,5 +4,5 @@ import androidx.lifecycle.LiveData
 import com.dalydays.android.forecastmvvm.data.db.unitlocalized.UnitSpecificCurrentWeatherEntry
 
 interface ForecastRepository {
-    suspend fun getCurrentWeather(metric: Boolean): LiveData<UnitSpecificCurrentWeatherEntry>
+    suspend fun getCurrentWeather(metric: Boolean): LiveData<out UnitSpecificCurrentWeatherEntry>
 }
